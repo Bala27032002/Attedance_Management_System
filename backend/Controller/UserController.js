@@ -35,6 +35,23 @@ exports.signup = async (req, res) => {
     }
 };
 
+exports.getEmployee = (req, res) => {
+    try {
+        const query = "SELECT * FROM user";
+        db.execute(query, (err, results) => {
+            if (err) {
+                console.error("Error fetching employees:", err);
+                return res.status(500).send("Error fetching employees");
+            }
+            res.json(results);
+        });
+    } catch (error) {
+        console.error("Internal server error:", error);
+        res.status(500).send("Internal server error");
+    }
+};
+
+
 
 // User login
 exports.login = async (req, res) => {

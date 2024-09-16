@@ -9,6 +9,7 @@ import {
   Snackbar,
   IconButton,
   InputAdornment,
+  useMediaQuery,
 } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
@@ -79,6 +80,8 @@ const Login = () => {
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
   };
+  const isSmallScreen = useMediaQuery("(max-width:599px)");
+
 
   return (
     <div
@@ -109,6 +112,7 @@ const Login = () => {
       >
         <Container maxWidth="lg">
           <Grid container spacing={3}>
+            {!isSmallScreen &&(
             <Grid
               item
               xs={12}
@@ -125,6 +129,7 @@ const Login = () => {
                 padding: "2rem",
               }}
             >
+           
               <Typography
                 id="text-40-700-47-Zen"
                 variant="h5"
@@ -136,7 +141,7 @@ const Login = () => {
                 Building the Future...
               </Typography>
             </Grid>
-
+   )}
             <Grid
               item
               xs={12}

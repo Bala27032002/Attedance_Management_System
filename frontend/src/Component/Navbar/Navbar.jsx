@@ -25,17 +25,18 @@ import interview from "../../Assests/Images/sidenav/interview.png";
 import accept from "../../Assests/Images/sidenav/accept.png";
 import cogwheel from "../../Assests/Images/sidenav/cogwheel.png";
 import report from "../../Assests/Images/sidenav/icons8-report-24.png";
+import { useMediaQuery } from "@mui/material";
 
 function Navbar() {
   const array_img = [
     { img: layout, routeLink: "/dashboard", tooltip: "Dashboard" },
     { img: portfolio, routeLink: "/myjobs", tooltip: "Jobs" },
     { img: hiring, routeLink: "/employee", tooltip: "Employee's" },
-    { img: vector, routeLink: "/ManageApprovals", tooltip: "Add NewUser" },
+    // { img: vector, routeLink: "/ManageApprovals", tooltip: "Add NewUser" },
     // { img: interview, routeLink: "/AllInterview", tooltip: "Manage Interviews" },
     // { img: accept, routeLink: "/myrequisitions", tooltip: "Manage Requisitions" },
     { img: cogwheel, routeLink: "/settings", tooltip: "Settings" },
-    { img: report, routeLink: "/ReportForm", tooltip: "Timesheet" },
+    // { img: report, routeLink: "/ReportForm", tooltip: "Timesheet" },
   ];
 
 
@@ -55,8 +56,7 @@ const UserName=localStorage.getItem("Name")
   const openAccountMenu = (event) => setAccountAnchorEl(event.currentTarget);
   const closeAccountMenu = () => setAccountAnchorEl(null);
 
-  const userName = localStorage.getItem("UserName");
-  const formattedUserName = userName?.charAt(0).toUpperCase() + userName?.slice(1);
+  const isSmallScreen = useMediaQuery("(max-width:570px)");
 
   return (
     <>
@@ -90,11 +90,13 @@ const UserName=localStorage.getItem("Name")
               <Box sx={{ padding: "3px 10px", cursor: "pointer" }} onClick={openNotificationModal}>
                 <img src={notification_img} alt="Notifications" />
               </Box>
-              <Box sx={{ padding: "6px 10px" }}>
-                <Typography id="text-15-500-20-Inter">
-                  Welcome {UserName}
-                </Typography>
-              </Box>
+              {!isSmallScreen && (
+                <Box sx={{ padding: "6px 10px" }}>
+                  <Typography id="text-15-500-20-Inter">
+                    Welcome {UserName}
+                  </Typography>
+                </Box>
+              )}
               <Box sx={{ padding: "6px 10px", cursor: "pointer" }} onClick={openAccountMenu}>
                 <Typography id="text-15-500-20-Inter">Account</Typography>
               </Box>

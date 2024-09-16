@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { TextField, Button, FormControlLabel, Checkbox, Grid, Typography, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
 import axios from 'axios';
 
-const AddNewUser = () => {
+const AddNewUser = ({closeModal}) => {
   const [fullName, setFullName] = useState('');
   const [employeeId, setEmployeeId] = useState('');
   const [emailId, setEmailId] = useState('');
@@ -189,7 +189,9 @@ const AddNewUser = () => {
     };
     try{
       const response= await axios.post("http://localhost:8000/auth/signup",formData);
-      console.log("response",response.data)
+      console.log("response",response.data);
+      closeModal()
+      window.location.reload()
     }
 
     catch (error) {

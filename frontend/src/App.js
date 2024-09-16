@@ -8,8 +8,21 @@ function App() {
   const loginpage=location.pathname==="/";
   return (
     <div >
-     {!loginpage && <Navbar />} 
+       <div
+          style={{
+            marginLeft: loginpage ? "0" : "50px",
+            padding:
+              location.pathname === "/" ||
+              location.pathname === "/dashboard" ||
+              location.pathname === "/employee" 
+             
+                ? "0"
+                : "15px",
+          }}
+        >
+     {!loginpage && <Navbar />}   
      <AllRoutes />
+    </div>
     </div>
   );
 }

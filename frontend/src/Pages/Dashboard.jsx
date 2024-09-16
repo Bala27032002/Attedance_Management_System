@@ -50,7 +50,7 @@ const Dashboard = () => {
 
   return (
     <>
-      <Grid style={{ padding: "1.5rem", background: "#F5F5F5",marginLeft:"50px" }}>
+      <Grid style={{ padding: "1.5rem", background: "#F5F5F5", }}>
         <Grid style={{ height: "3rem" }}>
           <Typography
             style={{
