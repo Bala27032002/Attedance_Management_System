@@ -2,8 +2,9 @@ import { Avatar, Chip, Grid, Typography, Button, Box, Modal, Tooltip } from '@mu
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import AddNewUser from '../AdminRegister/AddNewUser';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
-function EmployeeCard({ employee, isFirst }) {
+function EmployeeCard({ employee, isFirst ,onViewDetails}) {
   const generateAvatar = (name) => {
     return name ? name.charAt(0).toUpperCase() : '';
   };
@@ -28,8 +29,8 @@ function EmployeeCard({ employee, isFirst }) {
       lg={3}
       sx={{
         // padding: '1.5rem',
-        
-     
+
+
       }}
     >
       <Box
@@ -50,7 +51,7 @@ function EmployeeCard({ employee, isFirst }) {
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
-            
+
             width: '100%',
             marginBottom: '1rem', // Space below the name
           }}
@@ -92,6 +93,10 @@ function EmployeeCard({ employee, isFirst }) {
             <strong>Joining Date:</strong> {formatDate(employee.joiningDate)}
           </Typography>
         </Box>
+        <div style={{ display: 'flex', justifyContent: 'end', cursor: 'pointer',color:'#0B1A46' }} onClick={onViewDetails}>
+          <VisibilityIcon />
+        </div>
+
       </Box>
     </Grid>
   );
@@ -103,7 +108,10 @@ function EmployeeCard({ employee, isFirst }) {
 
 function EmployeeGrid() {
   const [employees, setEmployees] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false); // State for Add Employee modal
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false); // State for Details modal
+  const [selectedEmployee, setSelectedEmployee] = useState(null); 
+
 
   useEffect(() => {
     // Fetch employee data from the API
@@ -117,6 +125,8 @@ function EmployeeGrid() {
           title: employee.role,
           joiningDate: employee.joiningDate,
         }));
+        console.log(response.data);
+        
         setEmployees(fetchedEmployees);
       } catch (error) {
         console.error('Error fetching employee data:', error);
@@ -126,25 +136,34 @@ function EmployeeGrid() {
     fetchEmployees();
   }, []);
 
-  const openModal = () => {
-    setIsModalOpen(true);
+  const openAddModal = () => {
+    setIsAddModalOpen(true);
+  };
+  const closeAddModal = () => {
+    setIsAddModalOpen(false);
   };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
+  // Handlers for Details Modal
+  const openDetailsModal = (employee) => {
+    setSelectedEmployee(employee); // Set the clicked employee details
+    setIsDetailsModalOpen(true);
+  };
+  const closeDetailsModal = () => {
+    setIsDetailsModalOpen(false);
+    setSelectedEmployee(null); // Clear the selected employee when closing modal
   };
 
   return (
     <Box sx={{ padding: '1rem' }}>
       <Grid container alignItems="center" justifyContent="space-between" spacing={2} sx={{ marginBottom: '1rem' }}>
-        {/* Left side: Search bar and filter */}
+ 
         <Grid item>
-          {/* Add your Search and Filter Section here */}
+       
         </Grid>
 
         {/* Right side: Add Employee button */}
         <Grid item>
-          <Button variant="contained" color="primary" onClick={openModal}>
+          <Button variant="contained" color="primary" onClick={openAddModal}>
             Add Employee
           </Button>
         </Grid>
@@ -152,18 +171,22 @@ function EmployeeGrid() {
 
       <Grid container spacing={2}>
         {employees.map((employee, index) => (
-          <EmployeeCard employee={employee} key={index} isFirst={index === 0} />
-        ))}
+ <EmployeeCard
+ employee={employee}
+ key={index}
+ isFirst={index === 0}
+ onViewDetails={() => openDetailsModal(employee)}
+/>        ))}
       </Grid>
 
       {/* Modal for Add New Employee */}
       <Modal
-        open={isModalOpen}
-        onClose={closeModal}
+        open={isAddModalOpen}
+        onClose={closeAddModal}
         aria-labelledby="add-employee-modal"
         aria-describedby="add-employee-modal-description"
         BackdropProps={{
-          onClick: closeModal, // Close modal when clicking the backdrop
+          onClick: closeAddModal, // Close modal when clicking the backdrop
         }}
       >
         <div
@@ -180,12 +203,58 @@ function EmployeeGrid() {
             outline: 'none',
           }}
         >
-          <AddNewUser closeModal={closeModal} />
+          <AddNewUser closeModal={closeAddModal} />
+        </div>
+      </Modal>
+
+      {/* Modal for Viewing Employee Details */}
+      <Modal
+        open={isDetailsModalOpen}
+        onClose={closeDetailsModal}
+        aria-labelledby="view-employee-details-modal"
+        aria-describedby="view-employee-details-modal-description"
+        BackdropProps={{
+          onClick: closeDetailsModal, // Close modal when clicking the backdrop
+        }}
+      >
+        <div
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            overflowY: 'auto',
+            maxHeight: '100vh',
+            padding: '2rem',
+            backgroundColor: '#fff',
+            borderRadius: '8px',
+            outline: 'none',
+            maxWidth: '500px',
+            width: '100%',
+          }}
+        >
+          {selectedEmployee && (
+            <>
+              <Typography variant="h6">{selectedEmployee.name}</Typography>
+              <Typography variant="body1">
+                <strong>Employee Code:</strong> {selectedEmployee.empCode}
+              </Typography>
+              <Typography variant="body1">
+                <strong>Role:</strong> {selectedEmployee.title}
+              </Typography>
+              <Typography variant="body1">
+                <strong>Joining Date:</strong> {selectedEmployee.joiningDate}
+              </Typography>
+              {/* Add any other fields you want to display in the details */}
+            </>
+          )}
+          <Button variant="contained" color="primary" onClick={closeDetailsModal} sx={{ mt: 2 }}>
+            Close
+          </Button>
         </div>
       </Modal>
     </Box>
   );
 }
-
 
 export default EmployeeGrid;

@@ -51,6 +51,113 @@ exports.getEmployee = (req, res) => {
     }
 };
 
+// Fetch employee by ID
+exports.getEmployeeById = (req, res) => {
+    const { id } = req.params; // Get the employee id from the request parameters
+    const query = "SELECT * FROM user WHERE id = ?";
+
+    db.execute(query, [id], (err, results) => {
+        if (err) {
+            console.error("Error fetching employee:", err);
+            return res.status(500).send("Error fetching employee");
+        }
+
+        if (results.length === 0) {
+            return res.status(404).send("Employee not found");
+        }
+
+        // Check if permissions is already an object or a JSON string
+        const employee = results[0];
+        
+        // If it's a string, parse it, otherwise leave it as is
+        if (typeof employee.permissions === 'string') {
+            try {
+                employee.permissions = JSON.parse(employee.permissions);
+            } catch (parseError) {
+                console.error("Error parsing permissions:", parseError);
+                return res.status(500).send("Error parsing employee permissions");
+            }
+        }
+
+        res.json(employee);
+    });
+};
+
+// PUT: Update an existing employee by matching id
+exports.updateEmployee = async (req, res) => {
+    try {
+        const { id } = req.params; // Employee id from URL
+        const { Name, email_id, password, employeeId, role, joiningDate, permissions } = req.body;
+
+        // Hash the password if it exists in the update
+        let hashpassword = null;
+        if (password) {
+            hashpassword = await bcrypt.hash(password, 10);
+        }
+
+        // Convert permissions object to JSON string if it exists
+        const permissionsJson = permissions ? JSON.stringify(permissions) : null;
+
+        // SQL query to update user based on provided fields
+        const query = `
+            UPDATE user 
+            SET 
+                Name = COALESCE(?, Name), 
+                email_id = COALESCE(?, email_id), 
+                password = COALESCE(?, password), 
+                employeeId = COALESCE(?, employeeId), 
+                role = COALESCE(?, role), 
+                joiningDate = COALESCE(?, joiningDate), 
+                permissions = COALESCE(?, permissions)
+            WHERE id = ?
+        `;
+
+        // Execute the query with updated fields
+        db.execute(query, [Name, email_id, hashpassword, employeeId, role, joiningDate, permissionsJson, id], (err, result) => {
+            if (err) {
+                console.error("Error updating employee:", err);
+                return res.status(500).send("Error updating employee");
+            }
+
+            if (result.affectedRows === 0) {
+                return res.status(404).send("Employee not found");
+            }
+
+            res.status(200).send("Employee updated successfully");
+        });
+    } catch (error) {
+        console.error("Internal server error:", error);
+        res.status(500).send("Internal server error");
+    }
+};
+
+
+// Delete an employee by ID
+exports.deleteEmployee = (req, res) => {
+    try {
+        const { id } = req.params; // Employee id from URL
+
+        // SQL query to delete user by ID
+        const query = "DELETE FROM user WHERE id = ?";
+
+        // Execute the query
+        db.execute(query, [id], (err, result) => {
+            if (err) {
+                console.error("Error deleting employee:", err);
+                return res.status(500).send("Error deleting employee");
+            }
+
+            if (result.affectedRows === 0) {
+                return res.status(404).send("Employee not found");
+            }
+
+            res.status(200).send("Employee deleted successfully");
+        });
+    } catch (error) {
+        console.error("Internal server error:", error);
+        res.status(500).send("Internal server error");
+    }
+};
 
 
 // User login
