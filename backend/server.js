@@ -8,11 +8,7 @@ const db = require('./config/db');
 const app = express();
 
 // Middleware
-app.use(cors({
-    origin:["https://attedance-management-frontend.vercel.app/"],
-    methods:["POST","GET"],
-    Credentials:true
-}));
+app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json());
 
